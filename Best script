@@ -24,8 +24,8 @@ Tab1:AddDiscordInvite({
 
 task.delay(1, function()
    Window:Dialog({
-      Title = "Trakis huh atualizado!",
-      Text = "-intens vip em gamepass",
+      Title = "Trakis hub atualizado!",
+      Text = "-- Novas funções ",
       Options = {
         {
            "Discord",
