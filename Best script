@@ -1259,7 +1259,6 @@ GamepassTab:AddButton({
    end
 }) 
 
-"})
 
 
 local TrollTab = Window:MakeTab({ "Trolling Map", "map" })
