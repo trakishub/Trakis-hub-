@@ -1262,6 +1262,8 @@ GamepassTab:AddButton({
 "})
 
 
+local Tab = Window:MakeTab({"Itens/fun", "rbxassetid://127904742940104"})
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -1294,7 +1296,6 @@ local function CreateToolButton(title, toolName, remoteType)
    })
 end
 
-GamepassTab:AddDropdown({
 local Tools = {
    {
       Title = "Planador",
@@ -1355,6 +1356,10 @@ for _, tool in ipairs(Tools) do
       tool.Type
    )
 end
+
+
+
+
 
 
 local TrollTab = Window:MakeTab({ "Trolling Map", "map" })
