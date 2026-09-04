@@ -24,8 +24,8 @@ Tab1:AddDiscordInvite({
 
 task.delay(1, function()
    Window:Dialog({
-      Title = "Trakis huh atualizado!!!",
-      Text = "Novas opções meu manoo!!!",
+      Title = "Trakis huh atualizado!",
+      Text = "-intens vip em gamepass",
       Options = {
         {
            "Discord",
@@ -70,8 +70,8 @@ InfoTab:AddSection({ "Internet Things" })
 InfoTab:AddDiscordInvite({
    Name = "",
    Description = "",
-   Logo = "rbxassetid://78887700340952",
-   Invite = "https://discord.gg/GNjq644ARw",
+   Logo = "",
+   Invite = "",
 })
 
 InfoTab:AddSection({ "Credits" })
@@ -1259,12 +1259,109 @@ GamepassTab:AddButton({
    end
 }) 
 
+"})
+
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local LocalPlayer = Players.LocalPlayer
+local RE = ReplicatedStorage:WaitForChild("RE")
+
+local ToolEvent = RE:WaitForChild("1Playe1rTrigge1rEven1t")
+local ToolRemote = RE:WaitForChild("1Too1l")
+
+local function CreateToolButton(title, toolName, remoteType)
+   Tab:AddButton({
+      Title = title,
+      Locked = false,
+      Callback = function()
+
+        if remoteType == "Function" then
+           ToolRemote:InvokeServer(
+              "PickingTools",
+              toolName
+           )
+
+        else
+           ToolEvent:FireServer(
+              "AcceptedToolToServer",
+              toolName,
+              LocalPlayer
+           )
+        end
+      end
+   })
+end
+
+GamepassTab:AddDropdown({
+local Tools = {
+   {
+      Title = "Planador",
+      Tool = "Glider"
+   },
+
+   {
+      Title = "Canhão",
+      Tool = "Cannon"
+   },
+
+   {
+      Title = "Bola de Basquete Dourada",
+      Tool = "GoldenBasketball"
+   },
+
+   {
+      Title = "Balão de Água",
+      Tool = "Water Balloon",
+      Type = "Function"
+   },
+
+   {
+      Title = "Lançador de Ovo",
+      Tool = "EggLauncher"
+   },
+
+   {
+      Title = "Cristal Verde",
+      Tool = "UraniumRod"
+   },
+
+   {
+      Title = "Serra Elétrica",
+      Tool = "Chainsaw"
+   },
+
+   {
+      Title = "Ski",
+      Tool = "Skis"
+   },
+
+   {
+      Title = "Money Gun",
+      Tool = "MoneyGun"
+   },
+
+   {
+      Title = "Snowboard",
+      Tool = "Snowboard"
+   }
+}
+
+for _, tool in ipairs(Tools) do
+   CreateToolButton(
+      tool.Title,
+      tool.Tool,
+      tool.Type
+   )
+end
+
 
 local TrollTab = Window:MakeTab({ "Trolling Map", "map" })
 
-TrollTab:AddSection({ "Skybox by Bazuka" })
+TrollTab:AddSection({ "Skybox by cafezin" })
 TrollTab:AddButton({
- Name = "Skybox by Bazuka",
+ Name = "opção nao funciona mais",
  Callback = function()
    loadstring(game:HttpGet("https://api.rubis.app/v2/scrap/qZkSict1retkqFIr/raw"))()
    end
