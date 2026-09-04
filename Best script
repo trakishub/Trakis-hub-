@@ -24,23 +24,23 @@ Tab1:AddDiscordInvite({
 
 task.delay(1, function()
    Window:Dialog({
-      Title = "Olá, Seja bem vindo.",
-      Text = "Compre Seu Painel Administrador Exclusivo No Discord!",
+      Title = "Trakis huh atualizado!!!",
+      Text = "Novas opções meu manoo!!!",
       Options = {
         {
            "Discord",
            function()
-              local discordLink = "https://discord.gg/GNjq644ARw"
+              local discordLink = ""
               if setclipboard then
                 setclipboard(discordLink)
                 Libary:Notify({
-                   Title = "Dark Hub",
-                   Text = "Link do Discord copiado com sucesso!",
+                   Title = "",
+                   Text = "",
                    Duration = 5
                 })
               else
                 Libary:Notify({
-                   Title = "Dark Hub",
+                   Title = "TRAKIS HUB ATUALIZADO!",
                    Text = "Seu executor não permite copiar texto automaticamente.",
                    Duration = 5
                 })
@@ -51,7 +51,7 @@ task.delay(1, function()
            "Open",
            function()
               Libary:Notify({
-                Title = "Dark Hub",
+                Title = "Trakis hub ",
                 Text = "Bem-vindo(a) ao melhor Hub!",
                 Duration = 5
               })
@@ -61,22 +61,22 @@ task.delay(1, function()
    })
 end)
 
-print("KitK4ttttt Hubbbbbbbb")
+print("Trakis hub")
 
 local InfoTab = Window:MakeTab({ "Informations", "info" })
 
 InfoTab:AddSection({ "Internet Things" })
 
 InfoTab:AddDiscordInvite({
-   Name = "KitK4t Studios",
-   Description = "Entregue para adquirir o melhor painel adm do cenario!",
+   Name = "",
+   Description = "",
    Logo = "rbxassetid://78887700340952",
    Invite = "https://discord.gg/GNjq644ARw",
 })
 
 InfoTab:AddSection({ "Credits" })
-InfoTab:AddParagraph({ "Owner", "Bazuka and Sak" })
-InfoTab:AddParagraph({ "Programmers", "KitK4t Studios" })
+InfoTab:AddParagraph({ "Owner", "cafezin and vitin" })
+InfoTab:AddParagraph({ "Programmers", "cafezin" })
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
